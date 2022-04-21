@@ -5,15 +5,26 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(plansys2_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(nav2_msgs REQUIRED)
+find_package(plansys2_domain_expert REQUIRED)
 find_package(plansys2_executor REQUIRED)
+find_package(plansys2_planner REQUIRED)
+find_package(plansys2_problem_expert REQUIRED)
+find_package(plansys2_pddl_parser REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 
 set(dependencies
-    rclcpp
-    rclcpp_action
-    plansys2_msgs
-    plansys2_executor
+rclcpp
+rclcpp_action
+plansys2_msgs
+nav2_msgs
+plansys2_domain_expert
+plansys2_executor
+plansys2_planner
+plansys2_problem_expert
+plansys2_pddl_parser
 )
 
 add_executable(tiago_controller_node src/tiago_controller_node.cpp)
@@ -27,6 +38,7 @@ install(DIRECTORY launch pddl DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
   move_action_node
+  tiago_controller_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}

@@ -46,6 +46,14 @@ public:
   void init_knowledge()
   {
     // Le paso al problem_expert_ las instancias y los predicados
+    problem_expert_->addInstance(plansys2::Instance{"room1", "location"});
+    problem_expert_->addInstance(plansys2::Instance{"room2", "location"});
+    problem_expert_->addInstance(plansys2::Instance{"door1", "door"});
+    problem_expert_->addInstance(plansys2::Instance{"robot", "robot"});
+
+    problem_expert_->addPredicate(plansys2::Predicate("(door_joins door1 room1 room2)"));
+    problem_expert_->addPredicate(plansys2::Predicate("(opened_door door1)"));
+    problem_expert_->addPredicate(plansys2::Predicate("(robot_at robot room1)"));
   }
   void step()
   {
@@ -53,7 +61,7 @@ public:
       case STARTING:
         {
           // Set the goal for next state
-          problem_expert_->setGoal(plansys2::Goal("(and(patrolled wp1))"));
+          problem_expert_->setGoal(plansys2::Goal("(and(robot_at robot room2))"));
           // Compute the plan
           auto domain = domain_expert_->getDomain();
           auto problem = problem_expert_->getProblem();
@@ -65,15 +73,17 @@ public:
           }
           // Execute the plan
           if (executor_client_->start_plan_execution(plan.value())) {
-            state_ = PATROL_WP1;
+            state_ = FINISHED;
           }
         }
         break;
+      case FINISHED:
+        std::cout << "Finished!" << std::endl;
     }
   }
 
 private:
-  typedef enum {STARTING, PATROL_WP1, PATROL_WP2, PATROL_WP3, PATROL_WP4} StateType;
+  typedef enum {STARTING, FINISHED} StateType;
   StateType state_;
 
   std::shared_ptr<plansys2::DomainExpertClient> domain_expert_;
