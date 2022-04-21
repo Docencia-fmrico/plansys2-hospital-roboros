@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(plansys_hospital)
 
-
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
@@ -17,11 +16,17 @@ set(dependencies
     plansys2_executor
 )
 
+add_executable(tiago_controller_node src/tiago_controller_node.cpp)
+ament_target_dependencies(tiago_controller_node ${dependencies})
+
+add_executable(move_action_node src/move_action_node.cpp)
+ament_target_dependencies(move_action_node ${dependencies})
+
 
 install(DIRECTORY launch pddl DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-
+  move_action_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
