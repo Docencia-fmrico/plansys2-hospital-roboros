@@ -1,4 +1,4 @@
-# Copyright 2022 JhonDL
+# Copyright 2022 RoboRos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,9 +22,10 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
     # Get the launch directory
-    example_dir = get_package_share_directory('plansys2_simple_example')
+    example_dir = get_package_share_directory('plansys_hospital')
     namespace = LaunchConfiguration('namespace')
 
     declare_namespace_cmd = DeclareLaunchArgument(
@@ -38,15 +39,15 @@ def generate_launch_description():
             'launch',
             'plansys2_bringup_launch_monolithic.py')),
         launch_arguments={
-          'model_file': example_dir + '/pddl/simple_example.pddl',
+          'model_file': example_dir + '/pddl/hospital_domain.pddl',
           'namespace': namespace
           }.items())
 
     # Specify the actions
     move_cmd = Node(
         package='plansys2_simple_example',
-        executable='fake_move_node',
-        name='fake_move_node',
+        executable='move_action_node',
+        name='plansys_hospital',
         namespace=namespace,
         output='screen',
         parameters=[])
@@ -59,7 +60,5 @@ def generate_launch_description():
     ld.add_action(plansys2_cmd)
 
     ld.add_action(move_cmd)
-    ld.add_action(charge_cmd)
-    ld.add_action(ask_charge_cmd)
 
     return ld
