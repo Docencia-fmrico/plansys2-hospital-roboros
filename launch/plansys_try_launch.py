@@ -45,7 +45,7 @@ def generate_launch_description():
 
     # Specify the actions
     move_cmd = Node(
-        package='plansys2_simple_example',
+        package='plansys_hospital',
         executable='move_action_node',
         name='plansys_hospital',
         namespace=namespace,

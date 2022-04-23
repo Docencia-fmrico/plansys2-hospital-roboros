@@ -1,5 +1,5 @@
-(define (domain hotel-domain)
-    (:requirements :durative-actions :fluents :typing)
+(define (domain hospital)
+(:requirements :strips :typing :adl :fluents :durative-actions)
 
     (:types robot object location door elevator)
     (:predicates
