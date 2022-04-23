@@ -46,15 +46,17 @@ public:
   void init_knowledge()
   {
     // Le paso al problem_expert_ las instancias y los predicados
-    problem_expert_->addInstance(plansys2::Instance{"room1", "location"});
-    problem_expert_->addInstance(plansys2::Instance{"room2", "location"});
-    problem_expert_->addInstance(plansys2::Instance{"door1", "door"});
+    problem_expert_->addInstance(plansys2::Instance{"high_dependency_room_1", "location"});
+    problem_expert_->addInstance(plansys2::Instance{"high_dependency_room_4", "location"});
+    problem_expert_->addInstance(plansys2::Instance{"corridor", "door"});
     problem_expert_->addInstance(plansys2::Instance{"robot", "robot"});
 
-    problem_expert_->addPredicate(plansys2::Predicate("(door_joins door1 room1 room2)"));
-    problem_expert_->addPredicate(plansys2::Predicate("(door_joins door1 room2 room1)"));
-    problem_expert_->addPredicate(plansys2::Predicate("(opened_door door1)"));
-    problem_expert_->addPredicate(plansys2::Predicate("(robot_at robot room1)"));
+    problem_expert_->addPredicate(
+      plansys2::Predicate("(door_joins corridor high_dependency_room_1 high_dependency_room_4)"));
+    problem_expert_->addPredicate(
+      plansys2::Predicate("(door_joins corridor high_dependency_room_4 high_dependency_room_1)"));
+    problem_expert_->addPredicate(plansys2::Predicate("(opened_door corridor)"));
+    problem_expert_->addPredicate(plansys2::Predicate("(robot_at robot high_dependency_room_4)"));
   }
   void step()
   {
@@ -62,7 +64,7 @@ public:
       case STARTING:
         {
           // Set the goal for next state
-          problem_expert_->setGoal(plansys2::Goal("(and(robot_at robot room2))"));
+          problem_expert_->setGoal(plansys2::Goal("(and(robot_at robot high_dependency_room_1))"));
           // Compute the plan
           auto domain = domain_expert_->getDomain();
           auto problem = problem_expert_->getProblem();
@@ -96,8 +98,8 @@ public:
               // problem_expert_->removePredicate(plansys2::Predicate("(patrolled wp1)"));
 
               // Set the goal for next state
-              problem_expert_->setGoal(plansys2::Goal("(and(robot_at robot room1))"));
-
+              problem_expert_->setGoal(
+                plansys2::Goal("(and(robot_at robot high_dependency_room_4))"));
               // Compute the plan
               auto domain = domain_expert_->getDomain();
               auto problem = problem_expert_->getProblem();
