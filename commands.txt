@@ -1,0 +1,19 @@
+# Cargamos el pddl para usarlo desde terminal de plansys
+ros2 launch plansys2_bringup plansys2_bringup_launch_monolithic.py model_file:=src/plansys2-hospital-roboros/pddl/hospital_domain.pddl
+
+# Terminal de plansys
+ros2 run plansys2_terminal plansys2_terminal
+
+# Topic de publish point de rviz
+ros2 topic echo /clicked_point 
+
+# Ejecucion de la practica
+ros2 launch br2_tiago sim.launch.py 
+ros2 launch br2_navigation tiago_navigation.launch.py
+ros2 launch plansys_hospital plansys_try_launch.py
+ros2 run plansys_hospital tiago_controller_node
+
+# Nota: para el br2_navigation hay que cambiarle el fichero .yaml para que cargue el nuestro
+# en planning_cognitive_systems_course/br2_navigation/tiago_navigation.launch.py
+# ros2 launch br2_navigation tiago_navigation.launch.py map:=~/colcon_ws/src/plansys2-hospital-roboros/maps/map_1650637778.yaml
+# deberia hacer lo mismo pero almenos en mi caso no funciona
