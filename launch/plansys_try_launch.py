@@ -17,7 +17,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
@@ -33,6 +33,9 @@ def generate_launch_description():
         default_value='',
         description='Namespace')
 
+    stdout_linebuf_envvar = SetEnvironmentVariable(
+        'RCUTILS_CONSOLE_STDOUT_LINE_BUFFERED', '1')
+
     plansys2_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(
             get_package_share_directory('plansys2_bringup'),
@@ -45,20 +48,44 @@ def generate_launch_description():
 
     # Specify the actions
     move_cmd = Node(
-        package='plansys_hospital',
-        executable='move_action_node',
-        name='plansys_hospital',
+        package='plansys2_bt_actions',
+        executable='bt_action_node',
+        name='move',
         namespace=namespace,
         output='screen',
-        parameters=[])
+        parameters=[
+            example_dir + '/config/params.yaml',
+            {
+                'action_name': 'move',
+                'bt_xml_file': example_dir + '/bt_xml/move.xml'
+            }
+        ])
+
+    move_3_cmd = Node(
+        package='plansys2_bt_actions',
+        executable='bt_action_node',
+        name='move_3',
+        namespace=namespace,
+        output='screen',
+        parameters=[
+          example_dir + '/config/params.yaml',
+          {
+            'action_name': 'move',
+            'publisher_port': 1672,
+            'server_port': 1673,
+            'bt_xml_file': example_dir + '/bt_xml/move.xml'
+          }
+        ])
 
     ld = LaunchDescription()
 
+    ld.add_action(stdout_linebuf_envvar)
     ld.add_action(declare_namespace_cmd)
 
     # Declare the launch options
     ld.add_action(plansys2_cmd)
 
     ld.add_action(move_cmd)
+    ld.add_action(move_3_cmd)
 
     return ld

@@ -56,7 +56,7 @@
         :parameters
             (
             ?r - robot
-            ?fromloc - location
+            ?fromloc
             ?toloc - location
             ?d - door
             )
