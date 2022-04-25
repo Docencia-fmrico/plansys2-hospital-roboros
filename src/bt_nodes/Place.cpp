@@ -1,4 +1,4 @@
-// Copyright 2019 Intelligent Robotics Lab
+// Copyright 2022 RoboRos
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ Place::Place(
   const BT::NodeConfiguration & conf)
 : BT::ActionNodeBase(xml_tag_name, conf), counter_(0)
 {
-    // std::cerr << "here1 ***********************************************";
 }
 
 void
@@ -39,9 +38,9 @@ Place::halt()
 BT::NodeStatus
 Place::tick()
 {
-  std::cout << "Place tick " << counter_ << std::endl;
+  std::cout << "Place: " << counter_ * 10 << "%" << std::endl;
 
-  if (counter_++ < 10) {
+  if (counter_++ <= 10) {
     return BT::NodeStatus::RUNNING;
   } else {
     counter_ = 0;

@@ -1,4 +1,4 @@
-// Copyright 2019 Intelligent Robotics Lab
+// Copyright 2022 RoboRos
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,49 +41,13 @@ Move::Move(
 {
   rclcpp::Node::SharedPtr node;
   config().blackboard->get("node", node);
-
-  try {
-    node->declare_parameter("waypoints");
-    node->declare_parameter("waypoint_coords");
-  } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
-    // Do nothing;
-  }
-
-  if (node->has_parameter("waypoints")) {
-    std::vector<std::string> wp_names;
-
-    node->get_parameter_or("waypoints", wp_names, {});
-
-    for (auto & wp : wp_names) {
-      try {
-        node->declare_parameter("waypoint_coords." + wp);
-      } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
-        // Do nothing;
-      }
-
-      std::vector<double> coords;
-      if (node->get_parameter_or("waypoint_coords." + wp, coords, {})) {
-        geometry_msgs::msg::Pose2D pose;
-        pose.x = coords[0];
-        pose.y = coords[1];
-        pose.theta = coords[2];
-
-        waypoints_[wp] = pose;
-      } else {
-        std::cerr << "No coordinate configured for waypoint [" << wp << "]" << std::endl;
-      }
-    }
-  }
 }
 
 BT::NodeStatus
 Move::on_tick()
 {
   if (status() == BT::NodeStatus::IDLE) {
-    rclcpp::Node::SharedPtr node;
-    config().blackboard->get("node", node);
-
-    //start_time_ = node_->now();
+    start_time_ = node_->now();
     geometry_msgs::msg::PoseStamped goal;
 
     // getInput("goal", goal);
@@ -99,19 +63,17 @@ Move::on_tick()
 
     // goal.header.stamp = node_->now();
     // goal.header.frame_id = "/odom";
-    std::cout << "Moving to waypoint***" << goal.header.frame_id << " " << std::endl; 
-
+    std::cout << "Moving to waypoint***" << goal.header.frame_id << " " << std::endl;
     goal_.pose = goal;
   }
   return BT::NodeStatus::RUNNING;
-
 }
-/*
+
 void Move::on_wait_for_result()
 {
-  std::cout << "hi" << std::endl;
+  std::cout << "moving..." << std::endl;
 }
-*/
+
 BT::NodeStatus
 Move::on_success()
 {

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef BT_BEHAVIOR__MOVE_HPP_
-#define BT_BEHAVIOR__MOVE_HPP_
+#ifndef BT_INCLUDE__MOVE_HPP_
+#define BT_INCLUDE__MOVE_HPP_
 
 #include <string>
 #include "geometry_msgs/msg/twist.hpp"
@@ -40,7 +40,7 @@ public:
     const BT::NodeConfiguration & conf);
 
   BT::NodeStatus on_tick() override;
-  // void on_wait_for_result() override;
+  void on_wait_for_result() override;
 
   BT::NodeStatus on_success() override;
 
@@ -52,11 +52,8 @@ public:
   }
 
 private:
-  // rclcpp::Time start_time_;
-  int goal_reached_;
-  std::map<std::string, geometry_msgs::msg::Pose2D> waypoints_;
-
+  rclcpp::Time start_time_;
 };
 }  // namespace plansys_hospital
 
-#endif  // PLANSYS_HOSPITAL__MOVE_HPP_
+#endif  // BT_INCLUDE__MOVE_HPP_

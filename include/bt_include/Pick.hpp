@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef PLANSYS_HOSPITAL__BEHAVIOR_TREE_NODES__PICK_HPP_
-#define PLANSYS_HOSPITAL__BEHAVIOR_TREE_NODES__PICK_HPP_
+#ifndef BT_INCLUDE__PICK_HPP_
+#define BT_INCLUDE__PICK_HPP_
 
 #include <string>
 
@@ -44,4 +44,4 @@ private:
 
 }  // namespace plansys_hospital
 
-#endif  // PLANSYS_HOSPITAL__BEHAVIOR_TREE_NODES__PICK_HPP_
+#endif  // BT_INCLUDE__PICK_HPP_

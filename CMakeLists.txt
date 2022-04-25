@@ -39,15 +39,15 @@ include_directories(include)
 add_executable(tiago_controller_node src/tiago_controller_node.cpp)
 ament_target_dependencies(tiago_controller_node ${dependencies})
 
-# add_executable(move_action_node src/move_action_node.cpp)
-# ament_target_dependencies(move_action_node ${dependencies})
+add_executable(move_action_node src/move_action_node.cpp)
+ament_target_dependencies(move_action_node ${dependencies})
 
-add_library(bt_move SHARED src/bt_nodes/Move.cpp)
+# add_library(bt_move SHARED src/bt_nodes/Move.cpp)
 add_library(bt_pick SHARED src/bt_nodes/Pick.cpp)
 add_library(bt_place SHARED src/bt_nodes/Place.cpp)
 
 list(APPEND plugin_libs
-  bt_move
+  # bt_move
   bt_pick
   bt_place
 )
@@ -60,7 +60,7 @@ endforeach()
 install(DIRECTORY launch pddl bt_xml config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-  # move_action_node
+  move_action_node
   tiago_controller_node
   ${plugin_libs}
   ARCHIVE DESTINATION lib

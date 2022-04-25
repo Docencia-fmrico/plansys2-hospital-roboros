@@ -48,6 +48,14 @@ def generate_launch_description():
 
     # Specify the actions
     move_cmd = Node(
+        package='plansys_hospital',
+        executable='move_action_node',
+        name='plansys_hospital',
+        namespace=namespace,
+        output='screen',
+        parameters=[])
+    '''
+    move_cmd = Node(
         package='plansys2_bt_actions',
         executable='bt_action_node',
         name='move',
@@ -63,7 +71,7 @@ def generate_launch_description():
                 'bt_xml_file': example_dir + '/bt_xml/move.xml'
             }
         ])
-
+    '''
     pick_cmd = Node(
         package='plansys2_bt_actions',
         executable='bt_action_node',
@@ -74,21 +82,14 @@ def generate_launch_description():
             example_dir + '/config/params.yaml',
             {
                 'action_name': 'pick',
-                #'publisher_port': 1668,
-                #'server_port': 1669,
                 'bt_xml_file': example_dir + '/bt_xml/pick.xml'
             }
         ])
-
-
     ld = LaunchDescription()
-
     ld.add_action(stdout_linebuf_envvar)
     ld.add_action(declare_namespace_cmd)
-
     # Declare the launch options
     ld.add_action(plansys2_cmd)
-
     ld.add_action(move_cmd)
     ld.add_action(pick_cmd)
 
