@@ -1,117 +1,65 @@
-(define (domain hospital)
+(define (domain hospital_domain)
 (:requirements :strips :typing :adl :fluents :durative-actions)
 
-    (:types robot object location door elevator)
-    (:predicates
-        (robot_at ?r - robot ?l - location)
-        (object_at ?o - object ?l - location)
-        (opened_door ?d - door)
-        (door_joins ?d - door ?l1 - location ?l2 - location)
-        (carry_object ?r - robot ?o - object)
-        (elevator_joins ?e - elevator ?l1 - location ?l2 - location)
+(:types
+    robot
+    waypoint
+    object
     )
+(:predicates
 
-    (:durative-action take_elevator
-        :parameters
-            (
-            ?r - robot
-            ?fromloc - location
-            ?toloc - location
-            ?e - elevator
-            )
-        :duration 
-            (= ?duration 3)
-        :condition 
-            (and
-                (at start (robot_at ?r ?fromloc))
-                (at start (elevator_joins ?e ?fromloc ?toloc))
-            )
-        :effect (and 
-            (at start (not(robot_at ?r ?fromloc)))
-            (at end (robot_at ?r ?toloc))
+    (robot_at ?r - robot ?wp - waypoint)
+    (connected ?wp1 ?wp2 - waypoint)
+    (object_at ?o - object ?l - waypoint)
+    (carry_object ?r - robot ?o - object)
+
+)
+
+(:durative-action move
+    :parameters (?r - robot ?wp1 ?wp2 - waypoint)
+    :duration ( = ?duration 5)
+    :condition (and
+        (at start(connected ?wp1 ?wp2))
+        (at start(robot_at ?r ?wp1))
         )
+    :effect (and
+        (at start(not(robot_at ?r ?wp1)))
+        (at end(robot_at ?r ?wp2))
     )
-
-
-    (:durative-action open_door
-        :parameters(
-            ?r - robot
-            ?fromloc - location
-            ?toloc - location
-            ?d - door
-        )
-        :duration 
-            (= ?duration 3)
-        :condition 
-            (and
-                (at start (robot_at ?r ?fromloc))
-                (at start (door_joins ?d ?fromloc ?toloc))
-            )
-        :effect (and 
-            (at end (opened_door ?d))
-        )
-    )
-
-    (:durative-action move
-        :parameters
-            (
-            ?r - robot
-            ?fromloc
-            ?toloc - location
-            ?d - door
-            )
-        :duration 
-            (= ?duration 3)
-        :condition 
-            (and
-                (at start (robot_at ?r ?fromloc))
-                (at start (door_joins ?d ?fromloc ?toloc))
-                (at start (opened_door ?d))
-            )
-        :effect (and 
-            (at start (not(robot_at ?r ?fromloc)))
-            (at end (robot_at ?r ?toloc))
-        )
-    )
-
-    (:durative-action pick
-        :parameters
-            (
-            ?r - robot
-            ?loc - location
-            ?o - object
-            )
-        :duration 
-            (= ?duration 3)
-        :condition 
-            (and
-                (at start (robot_at ?r ?loc))
-                (at start (object_at ?o ?loc))
-            )
-        :effect (and 
-            (at end (carry_object ?r ?o))
-            (at start (not(object_at ?o ?loc)))
+)
 
         )
-    )
-
-    (:durative-action drop
-        :parameters
-            (
-            ?r - robot
-            ?loc - location
-            ?o - object
-            )
-        :duration 
-            (= ?duration 3)
-        :condition 
-            (and
-                (at start (carry_object ?r ?o))
-                (at start (robot_at ?r ?loc))
-            )
-        :effect (and 
-            (at start (not(carry_object ?r ?o)))
-            (at end (object_at ?o ?loc))
+    :duration 
+        (= ?duration 3)
+    :condition 
+        (and
+            (at start (robot_at ?r ?loc))
+            (at start (object_at ?o ?loc))
         )
+    :effect (and 
+        (at end (carry_object ?r ?o))
+        (at start (not(object_at ?o ?loc)))
     )
+)
+
+(:durative-action drop
+    :parameters
+        (
+        ?r - robot
+        ?loc - waypoint
+        ?o - object
+        )
+    :duration 
+        (= ?duration 3)
+    :condition 
+        (and
+            (at start (carry_object ?r ?o))
+            (at start (robot_at ?r ?loc))
+        )
+    :effect (and 
+        (at start (not(carry_object ?r ?o)))
+        (at end (object_at ?o ?loc))
+    )
+)
+
 )
