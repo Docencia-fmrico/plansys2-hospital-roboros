@@ -80,8 +80,10 @@ BT::NodeStatus
 Move::on_tick()
 {
   if (status() == BT::NodeStatus::IDLE) {
+    rclcpp::Node::SharedPtr node;
+    config().blackboard->get("node", node);
 
-    start_time_ = node_->now();
+    //start_time_ = node_->now();
     geometry_msgs::msg::PoseStamped goal;
 
     // getInput("goal", goal);
@@ -104,19 +106,12 @@ Move::on_tick()
   return BT::NodeStatus::RUNNING;
 
 }
-
+/*
 void Move::on_wait_for_result()
 {
-  //auto elapsed = node_->now() - start_time_;
-
-  //if (elapsed < 2s) {
-    std::cout << "hi" << std::endl;
-  //} else {
-  //  std::cout << "FINISH" << std::endl;
-  //  halt();
-  //}
+  std::cout << "hi" << std::endl;
 }
-
+*/
 BT::NodeStatus
 Move::on_success()
 {

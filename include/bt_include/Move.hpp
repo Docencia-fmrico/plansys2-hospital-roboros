@@ -40,7 +40,7 @@ public:
     const BT::NodeConfiguration & conf);
 
   BT::NodeStatus on_tick() override;
-  void on_wait_for_result() override;
+  // void on_wait_for_result() override;
 
   BT::NodeStatus on_success() override;
 
@@ -52,7 +52,7 @@ public:
   }
 
 private:
-  rclcpp::Time start_time_;
+  // rclcpp::Time start_time_;
   int goal_reached_;
   std::map<std::string, geometry_msgs::msg::Pose2D> waypoints_;
 

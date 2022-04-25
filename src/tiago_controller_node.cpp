@@ -79,7 +79,8 @@ public:
 
     problem_expert_->setGoal(
       plansys2::Goal(
-        "(and(carry_object robot object1))"));
+        "(and(robot_at robot high_dependency_room_4))"));
+        // "(and(carry_object robot object1))"));
 
   }
   void step()

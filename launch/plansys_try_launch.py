@@ -59,6 +59,7 @@ def generate_launch_description():
                 'action_name': 'move',
                 'publisher_port': 1668,
                 'server_port': 1669,
+                'server_timeout':50,
                 'bt_xml_file': example_dir + '/bt_xml/move.xml'
             }
         ])
@@ -79,21 +80,6 @@ def generate_launch_description():
             }
         ])
 
-    move_3_cmd = Node(
-        package='plansys2_bt_actions',
-        executable='bt_action_node',
-        name='move_3',
-        namespace=namespace,
-        output='screen',
-        parameters=[
-          example_dir + '/config/params.yaml',
-          {
-            'action_name': 'move',
-            'publisher_port': 1672,
-            'server_port': 1673,
-            'bt_xml_file': example_dir + '/bt_xml/move.xml'
-          }
-        ])
 
     ld = LaunchDescription()
 
