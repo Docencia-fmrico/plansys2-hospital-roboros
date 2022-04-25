@@ -42,10 +42,14 @@ ament_target_dependencies(tiago_controller_node ${dependencies})
 # add_executable(move_action_node src/move_action_node.cpp)
 # ament_target_dependencies(move_action_node ${dependencies})
 
-add_library(plansys2_move_bt_node SHARED src/bt_nodes/Move.cpp)
+add_library(bt_move SHARED src/bt_nodes/Move.cpp)
+add_library(bt_pick SHARED src/bt_nodes/Pick.cpp)
+add_library(bt_place SHARED src/bt_nodes/Place.cpp)
 
 list(APPEND plugin_libs
-  plansys2_move_bt_node
+  bt_move
+  bt_pick
+  bt_place
 )
 
 foreach(bt_plugin ${plugin_libs})

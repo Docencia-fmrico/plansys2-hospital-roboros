@@ -57,7 +57,25 @@ def generate_launch_description():
             example_dir + '/config/params.yaml',
             {
                 'action_name': 'move',
+                'publisher_port': 1668,
+                'server_port': 1669,
                 'bt_xml_file': example_dir + '/bt_xml/move.xml'
+            }
+        ])
+
+    pick_cmd = Node(
+        package='plansys2_bt_actions',
+        executable='bt_action_node',
+        name='pick',
+        namespace=namespace,
+        output='screen',
+        parameters=[
+            example_dir + '/config/params.yaml',
+            {
+                'action_name': 'pick',
+                #'publisher_port': 1668,
+                #'server_port': 1669,
+                'bt_xml_file': example_dir + '/bt_xml/pick.xml'
             }
         ])
 
@@ -86,6 +104,6 @@ def generate_launch_description():
     ld.add_action(plansys2_cmd)
 
     ld.add_action(move_cmd)
-    ld.add_action(move_3_cmd)
+    ld.add_action(pick_cmd)
 
     return ld
