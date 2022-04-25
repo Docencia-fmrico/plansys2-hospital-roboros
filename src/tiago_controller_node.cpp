@@ -34,15 +34,32 @@ public:
   : rclcpp::Node("tiago_controller"), state_(STARTING)
   {
   }
-  void init()
+
+  bool init()
   {
     domain_expert_ = std::make_shared<plansys2::DomainExpertClient>();
     planner_client_ = std::make_shared<plansys2::PlannerClient>();
     problem_expert_ = std::make_shared<plansys2::ProblemExpertClient>();
     executor_client_ = std::make_shared<plansys2::ExecutorClient>();
-    init_knowledge();
-  }
 
+    init_knowledge();
+
+    auto domain = domain_expert_->getDomain();
+    auto problem = problem_expert_->getProblem();
+    auto plan = planner_client_->getPlan(domain, problem);
+
+    if (!plan.has_value()) {
+      std::cout << "Could not find plan to reach goal " <<
+        parser::pddl::toString(problem_expert_->getGoal()) << std::endl;
+      return false;
+    }
+
+    if (!executor_client_->start_plan_execution(plan.value())) {
+      RCLCPP_ERROR(get_logger(), "Error starting a new plan (first)");
+    }
+
+    return true;
+  }
   void init_knowledge()
   {
     // Le paso al problem_expert_ las instancias y los predicados
@@ -50,98 +67,32 @@ public:
     problem_expert_->addInstance(plansys2::Instance{"high_dependency_room_4", "location"});
     problem_expert_->addInstance(plansys2::Instance{"corridor", "door"});
     problem_expert_->addInstance(plansys2::Instance{"robot", "robot"});
+    problem_expert_->addInstance(plansys2::Instance{"object1", "object"});
 
     problem_expert_->addPredicate(
       plansys2::Predicate("(door_joins corridor high_dependency_room_1 high_dependency_room_4)"));
     problem_expert_->addPredicate(
       plansys2::Predicate("(door_joins corridor high_dependency_room_4 high_dependency_room_1)"));
     problem_expert_->addPredicate(plansys2::Predicate("(opened_door corridor)"));
-    problem_expert_->addPredicate(plansys2::Predicate("(robot_at robot high_dependency_room_4)"));
+    problem_expert_->addPredicate(plansys2::Predicate("(robot_at robot high_dependency_room_1)"));
+    problem_expert_->addPredicate(
+      plansys2::Predicate("(object_at object1 high_dependency_room_1)"));
+
+    problem_expert_->setGoal(
+      plansys2::Goal(
+        "(and(robot_at robot high_dependency_room_4))"));
+    // "(and(carry_object robot object1))"));
   }
   void step()
   {
-    switch (state_) {
-      case STARTING:
-        {
-          // Set the goal for next state
-          problem_expert_->setGoal(plansys2::Goal("(and(robot_at robot high_dependency_room_1))"));
-          // Compute the plan
-          auto domain = domain_expert_->getDomain();
-          auto problem = problem_expert_->getProblem();
-          auto plan = planner_client_->getPlan(domain, problem);
-          if (!plan.has_value()) {
-            std::cout << "Could not find plan to reach goal " <<
-              parser::pddl::toString(problem_expert_->getGoal()) << std::endl;
-            break;
-          }
-          // Execute the plan
-          if (executor_client_->start_plan_execution(plan.value())) {
-            state_ = MOVING;
-          }
-        }
-        break;
-      case MOVING:
-        {
-          auto feedback = executor_client_->getFeedBack();
+    if (!executor_client_->execute_and_check_plan()) {  // Plan finished
+      auto result = executor_client_->getResult();
 
-          for (const auto & action_feedback : feedback.action_execution_status) {
-            std::cout << "[" << action_feedback.action << " " <<
-              action_feedback.completion * 100.0 << "%]";
-          }
-          std::cout << std::endl;
-
-          if (!executor_client_->execute_and_check_plan() && executor_client_->getResult()) {
-            if (executor_client_->getResult().value().success) {
-              std::cout << "Successful finished " << std::endl;
-
-              // Cleanning up
-              // problem_expert_->removePredicate(plansys2::Predicate("(patrolled wp1)"));
-
-              // Set the goal for next state
-              problem_expert_->setGoal(
-                plansys2::Goal("(and(robot_at robot high_dependency_room_4))"));
-              // Compute the plan
-              auto domain = domain_expert_->getDomain();
-              auto problem = problem_expert_->getProblem();
-              auto plan = planner_client_->getPlan(domain, problem);
-
-              if (!plan.has_value()) {
-                std::cout << "Could not find plan to reach goal " <<
-                  parser::pddl::toString(problem_expert_->getGoal()) << std::endl;
-                break;
-              }
-
-              // Execute the plan
-              if (executor_client_->start_plan_execution(plan.value())) {
-                state_ = FINISHED;
-              }
-            } else {
-              for (const auto & action_feedback : feedback.action_execution_status) {
-                if (action_feedback.status == plansys2_msgs::msg::ActionExecutionInfo::FAILED) {
-                  std::cout << "[" << action_feedback.action << "] finished with error: " <<
-                    action_feedback.message_status << std::endl;
-                }
-              }
-
-              // Replan
-              auto domain = domain_expert_->getDomain();
-              auto problem = problem_expert_->getProblem();
-              auto plan = planner_client_->getPlan(domain, problem);
-
-              if (!plan.has_value()) {
-                std::cout << "Unsuccessful replan attempt to reach goal " <<
-                  parser::pddl::toString(problem_expert_->getGoal()) << std::endl;
-                break;
-              }
-
-              // Execute the plan
-              executor_client_->start_plan_execution(plan.value());
-            }
-          }
-        }
-        break;
-      case FINISHED:
-        std::cout << "Finished!" << std::endl;
+      if (result.value().success) {
+        RCLCPP_INFO(get_logger(), "Plan succesfully finished");
+      } else {
+        RCLCPP_ERROR(get_logger(), "Plan finished with error");
+      }
     }
   }
 
@@ -160,8 +111,9 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
   auto node = std::make_shared<TiagoController>();
 
-  node->init();
-
+  if (!node->init()) {
+    return 0;
+  }
   rclcpp::Rate rate(5);
   while (rclcpp::ok()) {
     node->step();

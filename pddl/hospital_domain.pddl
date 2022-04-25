@@ -28,12 +28,6 @@
     )
 )
 
-(:durative-action pick
-    :parameters
-        (
-        ?r - robot
-        ?loc - waypoint
-        ?o - object
         )
     :duration 
         (= ?duration 3)
