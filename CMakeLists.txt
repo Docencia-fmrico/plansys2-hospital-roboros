@@ -44,12 +44,12 @@ ament_target_dependencies(move_action_node ${dependencies})
 
 # add_library(bt_move SHARED src/bt_nodes/Move.cpp)
 add_library(bt_pick SHARED src/bt_nodes/Pick.cpp)
-add_library(bt_place SHARED src/bt_nodes/Place.cpp)
+add_library(bt_drop SHARED src/bt_nodes/Drop.cpp)
 
 list(APPEND plugin_libs
   # bt_move
   bt_pick
-  bt_place
+  bt_drop
 )
 
 foreach(bt_plugin ${plugin_libs})

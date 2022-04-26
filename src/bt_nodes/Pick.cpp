@@ -40,7 +40,7 @@ Pick::tick()
 {
   std::cout << "Pick: " << counter_ * 10 << "%" << std::endl;
 
-  if (counter_++ <= 10) {
+  if (counter_++ < 10) {
     return BT::NodeStatus::RUNNING;
   } else {
     counter_ = 0;

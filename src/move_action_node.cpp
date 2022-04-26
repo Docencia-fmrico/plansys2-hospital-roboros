@@ -43,10 +43,10 @@ public:
     wp.pose.position.x = 0.0;
     wp.pose.position.y = -2.0;
     wp.pose.position.z = 0.0;
-    wp.pose.orientation.x = 0.6428;
-    wp.pose.orientation.y = 15.4115;
+    wp.pose.orientation.x = 0.0;
+    wp.pose.orientation.y = 0.0;
     wp.pose.orientation.z = 0.0;
-    wp.pose.orientation.w = 1.0;
+    wp.pose.orientation.w = -1.0;
     waypoints_["left_elevator"] = wp;
 
     wp.pose.position.x = -1.9891;

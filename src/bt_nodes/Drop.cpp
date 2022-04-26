@@ -1,4 +1,4 @@
-// Copyright 2019 Intelligent Robotics Lab
+// Copyright 2022 RoboRos
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,36 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef BT_INCLUDE__PLACE_HPP_
-#define BT_INCLUDE__PLACE_HPP_
-
 #include <string>
+#include <iostream>
+
+#include "bt_include/Drop.hpp"
 
 #include "behaviortree_cpp_v3/behavior_tree.h"
-#include "behaviortree_cpp_v3/bt_factory.h"
 
 namespace plansys_hospital
 {
 
-class Place : public BT::ActionNodeBase
+Drop::Drop(
+  const std::string & xml_tag_name,
+  const BT::NodeConfiguration & conf)
+: BT::ActionNodeBase(xml_tag_name, conf), counter_(0)
 {
-public:
-  explicit Place(
-    const std::string & xml_tag_name,
-    const BT::NodeConfiguration & conf);
+}
 
-  void halt();
-  BT::NodeStatus tick();
+void
+Drop::halt()
+{
+  std::cout << "Drop halt" << std::endl;
+}
 
-  static BT::PortsList providedPorts()
-  {
-    return BT::PortsList({});
+BT::NodeStatus
+Drop::tick()
+{
+  std::cout << "Drop: " << counter_ * 10 << "%" << std::endl;
+
+  if (counter_++ < 10) {
+    return BT::NodeStatus::RUNNING;
+  } else {
+    counter_ = 0;
+    return BT::NodeStatus::SUCCESS;
   }
-
-private:
-  int counter_;
-};
+}
 
 }  // namespace plansys_hospital
 
-#endif  // BT_INCLUDE__PLACE_HPP_
+#include "behaviortree_cpp_v3/bt_factory.h"
+BT_REGISTER_NODES(factory)
+{
+  factory.registerNodeType<plansys_hospital::Drop>("Drop");
+}

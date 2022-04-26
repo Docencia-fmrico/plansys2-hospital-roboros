@@ -63,24 +63,29 @@ public:
   void init_knowledge()
   {
     // Le paso al problem_expert_ las instancias y los predicados
-    problem_expert_->addInstance(plansys2::Instance{"high_dependency_room_1", "location"});
+    problem_expert_->addInstance(plansys2::Instance{"high_dependency_room_2", "location"});
     problem_expert_->addInstance(plansys2::Instance{"high_dependency_room_4", "location"});
+    problem_expert_->addInstance(plansys2::Instance{"reception", "location"});
     problem_expert_->addInstance(plansys2::Instance{"corridor", "door"});
     problem_expert_->addInstance(plansys2::Instance{"robot", "robot"});
-    problem_expert_->addInstance(plansys2::Instance{"object1", "object"});
+    problem_expert_->addInstance(plansys2::Instance{"mask", "object"});
 
     problem_expert_->addPredicate(
-      plansys2::Predicate("(door_joins corridor high_dependency_room_1 high_dependency_room_4)"));
+      plansys2::Predicate("(door_joins corridor high_dependency_room_2 high_dependency_room_4)"));
     problem_expert_->addPredicate(
-      plansys2::Predicate("(door_joins corridor high_dependency_room_4 high_dependency_room_1)"));
+      plansys2::Predicate("(door_joins corridor high_dependency_room_4 high_dependency_room_2)"));
+    problem_expert_->addPredicate(
+      plansys2::Predicate("(door_joins corridor reception high_dependency_room_2)"));
+    problem_expert_->addPredicate(
+      plansys2::Predicate("(door_joins corridor high_dependency_room_2 reception)"));
     problem_expert_->addPredicate(plansys2::Predicate("(opened_door corridor)"));
-    problem_expert_->addPredicate(plansys2::Predicate("(robot_at robot high_dependency_room_1)"));
+    problem_expert_->addPredicate(plansys2::Predicate("(robot_at robot reception)"));
     problem_expert_->addPredicate(
-      plansys2::Predicate("(object_at object1 high_dependency_room_1)"));
+      plansys2::Predicate("(object_at mask reception)"));
 
     problem_expert_->setGoal(
       plansys2::Goal(
-        "(and(robot_at robot high_dependency_room_4))"));
+        "(and(object_at mask high_dependency_room_2))"));
     // "(and(carry_object robot object1))"));
   }
   void step()

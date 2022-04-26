@@ -54,24 +54,7 @@ def generate_launch_description():
         namespace=namespace,
         output='screen',
         parameters=[])
-    '''
-    move_cmd = Node(
-        package='plansys2_bt_actions',
-        executable='bt_action_node',
-        name='move',
-        namespace=namespace,
-        output='screen',
-        parameters=[
-            example_dir + '/config/params.yaml',
-            {
-                'action_name': 'move',
-                'publisher_port': 1668,
-                'server_port': 1669,
-                'server_timeout':50,
-                'bt_xml_file': example_dir + '/bt_xml/move.xml'
-            }
-        ])
-    '''
+
     pick_cmd = Node(
         package='plansys2_bt_actions',
         executable='bt_action_node',
@@ -85,6 +68,19 @@ def generate_launch_description():
                 'bt_xml_file': example_dir + '/bt_xml/pick.xml'
             }
         ])
+    drop_cmd = Node(
+        package='plansys2_bt_actions',
+        executable='bt_action_node',
+        name='drop',
+        namespace=namespace,
+        output='screen',
+        parameters=[
+            example_dir + '/config/params.yaml',
+            {
+                'action_name': 'drop',
+                'bt_xml_file': example_dir + '/bt_xml/drop.xml'
+            }
+        ])
     ld = LaunchDescription()
     ld.add_action(stdout_linebuf_envvar)
     ld.add_action(declare_namespace_cmd)
@@ -92,5 +88,6 @@ def generate_launch_description():
     ld.add_action(plansys2_cmd)
     ld.add_action(move_cmd)
     ld.add_action(pick_cmd)
+    ld.add_action(drop_cmd)
 
     return ld

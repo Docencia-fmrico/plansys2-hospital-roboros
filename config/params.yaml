@@ -14,7 +14,7 @@ pick:
     plugins:
       - bt_pick
 
-place:
+drop:
   ros__parameters:
     plugins:
-      - bt_place
+      - bt_drop
